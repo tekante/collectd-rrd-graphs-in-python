@@ -43,8 +43,8 @@ def _graph(graph_vars, start, end, locale=None, units_length=8, **kwargs):
     color = ColorAttributes(lefttop_border='#0000', rightbottom_border='#0000',
                             background='#0000')
     kwargs.setdefault('width', 820)
-    graph = Graph(env, '-', imgformat='PNG', height=210, start=utctimestamp(start),
-                  end=utctimestamp(end), color=color, units_length=units_length, **kwargs)
+    graph = Graph(env, '-', imgformat='PNG', height=210, start=start,
+                  end=end, color=color, units_length=units_length, **kwargs)
     graph.data.extend(graph_vars)
     return graph.write(env=env)
 
@@ -438,8 +438,6 @@ if __name__ == '__main__':
         start = end - datetime.timedelta(days=7) if args.start is None else args.start
         print start
         print end
-        start = datetime.datetime.combine(start, datetime.time()).replace(tzinfo=tzinfo)
-        end = datetime.datetime.combine(end, datetime.time()).replace(tzinfo=tzinfo)
         if hasattr(args, 'logarithmic'):
             p = graph(plugin, args.rrd_dir, start=start, end=end,
                       locale=args.locale, logarithmic=args.logarithmic)
@@ -453,8 +451,8 @@ if __name__ == '__main__':
         parser = subparsers.add_parser(plugin)
         parser.add_argument('-l', '--locale')
         parser.add_argument('-t', '--timezone')
-        parser.add_argument('-s', '--start', help=datefield_help, type=coerce_date_value)
-        parser.add_argument('-e', '--end', help=datefield_help, type=coerce_date_value)
+        parser.add_argument('-s', '--start', help=datefield_help)
+        parser.add_argument('-e', '--end', help=datefield_help)
         parser.add_argument('-d', '--rrd-dir', required=True)
         parser.add_argument('-o', '--output')
         parser.set_defaults(func=functools.partial(do_graph, plugin=plugin))
